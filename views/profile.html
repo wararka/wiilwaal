@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Website</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Bogga Hore</a>
+                <a href="create-post.html" class="nav-link">Samee Post</a>
+                <a href="settings.html" class="nav-link">Settings</a>
+                <a href="user-list.html" class="nav-link">Isticmaalayaal</a>
+                <a href="/logout" class="nav-link logout">Ka Bax</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-image-section">
+                        <img src="images/default-profile.png" alt="Profile" class="profile-image" id="profileImage">
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <strong id="postsCount">15</strong>
+                                <span>Posts</span>
+                            </div>
+                            <div class="stat">
+                                <strong id="likesCount">248</strong>
+                                <span>Likes</span>
+                            </div>
+                            <div class="stat">
+                                <strong id="commentsCount">89</strong>
+                                <span>Comments</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <h1 id="profileUsername">zaki4548</h1>
+                        <p class="profile-name" id="profileName">Zaki</p>
+                        <p class="profile-bio" id="profileBio">Waxaan jeclahay technology iyo programming! 🚀</p>
+                        <p class="join-date">Joined: January 2024</p>
+                        
+                        <div class="profile-actions">
+                            <button class="edit-profile-btn" onclick="window.location.href='settings.html'">Edit Profile</button>
+                            <button class="message-btn" onclick="startChat('zaki4548')">Fariin</button>
+                            <button class="follow-btn" id="followBtn" onclick="toggleFollow()">Raac</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Navigation -->
+            <div class="profile-nav">
+                <button class="profile-nav-btn active" onclick="showSection('posts')">Posts</button>
+                <button class="profile-nav-btn" onclick="showSection('media')">Media</button>
+                <button class="profile-nav-btn" onclick="showSection('likes')">Likes</button>
+                <button class="profile-nav-btn" onclick="showSection('private')">Private Posts</button>
+            </div>
+
+            <!-- Posts Section -->
+            <div id="posts" class="profile-section active">
+                <h3>Dhammaan Posts-yada</h3>
+                <div class="posts-grid" id="postsGrid">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Media Section -->
+            <div id="media" class="profile-section">
+                <h3>Media-yada</h3>
+                <div class="media-grid" id="mediaGrid">
+                    <!-- Media will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Likes Section -->
+            <div id="likes" class="profile-section">
+                <h3>Posts-yada aad jeceshahay</h3>
+                <div class="likes-list" id="likesList">
+                    <!-- Liked posts will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Private Posts Section -->
+            <div id="private" class="profile-section">
+                <h3>Posts-yada Qarsoon</h3>
+                <div class="private-posts" id="privatePosts">
+                    <!-- Private posts will be loaded here -->
+                    <div class="private-notice">
+                        <p>🔒 Posts-kaan waxa kaliya oo arki karta adiga</p>
+                        <p>Dadka kale ma arki karaan posts-kaan xataa haday soo muqdaan profile-kaaga</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Post Modal -->
+    <div id="postModal" class="modal" style="display: none;">
+        <div class="modal-content post-modal">
+            <button class="close-btn" onclick="closePostModal()">×</button>
+            <div id="postModalContent">
+                <!-- Post content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Profile data (in real app, this would come from backend)
+        const profileData = {
+            username: 'zaki4548',
+            name: 'Zaki',
+            bio: 'Waxaan jeclahay technology iyo programming! 🚀',
+            joinDate: 'January 2024',
+            stats: {
+                posts: 15,
+                likes: 248,
+                comments: 89
+            },
+            isFollowing: false,
+            isOwnProfile: true
+        };
+
+        // Mock posts data
+        const userPosts = [
+            {
+                id: 1,
+                content: 'Maanta waa maalin fiican! Waxaan sameeyay project cusub ☀️',
+                type: 'text',
+                likes: 25,
+                comments: 8,
+                timestamp: '2 saacadood ka hor',
+                privacy: 'public',
+                hasMedia: false
+            },
+            {
+                id: 2,
+                content: 'Sawirka cusub ee vacation-ka 🏖️',
+                type: 'image',
+                image: 'vacation.jpg',
+                likes: 45,
+                comments: 12,
+                timestamp: '1 maalin ka hor',
+                privacy: 'public',
+                hasMedia: true
+            },
+            {
+                id: 3,
+                content: 'Video-ga tutorial-ka JavaScript',
+                type: 'video',
+                video: 'tutorial.mp4',
+                likes: 89,
+                comments: 23,
+                timestamp: '3 maalmood ka hor',
+                privacy: 'public',
+                hasMedia: true
+            },
+            {
+                id: 4,
+                content: 'Fikraddayda shaqo cusub 🎯',
+                type: 'text',
+                likes: 15,
+                comments: 3,
+                timestamp: '5 maalmood ka hor',
+                privacy: 'private',
+                hasMedia: false
+            },
+            {
+                id: 5,
+                content: 'Heesta aan jeclahay 🎵',
+                type: 'audio',
+                audio: 'song.mp3',
+                likes: 32,
+                comments: 7,
+                timestamp: '1 usbuuc ka hor',
+                privacy: 'public',
+                hasMedia: true
+            }
+        ];
+
+        // Initialize profile
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+            loadPosts();
+            setupProfileNavigation();
+        });
+
+        function loadProfileData() {
+            document.getElementById('profileUsername').textContent = profileData.username;
+            document.getElementById('profileName').textContent = profileData.name;
+            document.getElementById('profileBio').textContent = profileData.bio;
+            document.querySelector('.join-date').textContent = `Joined: ${profileData.joinDate}`;
+            
+            document.getElementById('postsCount').textContent = profileData.stats.posts;
+            document.getElementById('likesCount').textContent = profileData.stats.likes;
+            document.getElementById('commentsCount').textContent = profileData.stats.comments;
+
+            // Hide follow button if it's own profile
+            if (profileData.isOwnProfile) {
+                document.getElementById('followBtn').style.display = 'none';
+            }
+        }
+
+        function loadPosts() {
+            const postsGrid = document.getElementById('postsGrid');
+            let postsHTML = '';
+
+            userPosts.forEach(post => {
+                if (post.privacy === 'public' || profileData.isOwnProfile) {
+                    postsHTML += `
+                        <div class="post-card" onclick="openPostModal(${post.id})">
+                            ${post.hasMedia ? '<div class="post-media-indicator">📁</div>' : ''}
+                            <div class="post-content-preview">
+                                ${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}
+                            </div>
+                            <div class="post-stats">
+                                <span>❤️ ${post.likes}</span>
+                                <span>💬 ${post.comments}</span>
+                                ${post.privacy === 'private' ? '<span>🔒</span>' : ''}
+                            </div>
+                            <div class="post-time">${post.timestamp}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            postsGrid.innerHTML = postsHTML;
+            loadMediaGrid();
+            loadLikesList();
+            loadPrivatePosts();
+        }
+
+        function loadMediaGrid() {
+            const mediaGrid = document.getElementById('mediaGrid');
+            let mediaHTML = '';
+
+            userPosts.forEach(post => {
+                if (post.hasMedia && (post.privacy === 'public' || profileData.isOwnProfile)) {
+                    let mediaThumbnail = '';
+                    
+                    if (post.image) {
+                        mediaThumbnail = `
+                            <div class="media-item" onclick="openPostModal(${post.id})">
+                                <img src="uploads/${post.image}" alt="Post image">
+                                <div class="media-type">🖼️</div>
+                            </div>
+                        `;
+                    } else if (post.video) {
+                        mediaThumbnail = `
+                            <div class="media-item" onclick="openPostModal(${post.id})">
+                                <div class="video-thumbnail">
+                                    <div class="play-icon">▶️</div>
+                                    <span>Video</span>
+                                </div>
+                                <div class="media-type">🎥</div>
+                            </div>
+                        `;
+                    } else if (post.audio) {
+                        mediaThumbnail = `
+                            <div class="media-item" onclick="openPostModal(${post.id})">
+                                <div class="audio-thumbnail">
+                                    <div class="audio-icon">🎵</div>
+                                    <span>Audio</span>
+                                </div>
+                                <div class="media-type">🔊</div>
+                            </div>
+                        `;
+                    }
+                    
+                    mediaHTML += mediaThumbnail;
+                }
+            });
+
+            mediaGrid.innerHTML = mediaHTML;
+        }
+
+        function loadLikesList() {
+            const likesList = document.getElementById('likesList');
+            // In real app, this would show posts the user liked
+            likesList.innerHTML = `
+                <div class="empty-state">
+                    <p>Wali ma jeceshahay post-yada</p>
+                    <p>Markaad jecesato post, waxay ku muuqan doontaa halkan</p>
+                </div>
+            `;
+        }
+
+        function loadPrivatePosts() {
+            const privatePosts = document.getElementById('privatePosts');
+            let privateHTML = '';
+
+            userPosts.forEach(post => {
+                if (post.privacy === 'private' && profileData.isOwnProfile) {
+                    privateHTML += `
+                        <div class="private-post-card" onclick="openPostModal(${post.id})">
+                            <div class="private-indicator">🔒 Private</div>
+                            <div class="post-content-preview">
+                                ${post.content}
+                            </div>
+                            <div class="post-stats">
+                                <span>❤️ ${post.likes}</span>
+                                <span>💬 ${post.comments}</span>
+                            </div>
+                            <div class="post-time">${post.timestamp}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (!privateHTML) {
+                privateHTML = `
+                    <div class="empty-state">
+                        <p>Ma haysatid post-yo qarsoon</p>
+                        <p>Markaad sameysid post qarsoon, waxay ku muuqan doontaa halkan</p>
+                    </div>
+                `;
+            }
+
+            privatePosts.innerHTML = privateHTML;
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.profile-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.profile-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function setupProfileNavigation() {
+            // Only show private section for own profile
+            if (!profileData.isOwnProfile) {
+                document.querySelector('.profile-nav-btn[onclick="showSection(\'private\')"]').style.display = 'none';
+            }
+        }
+
+        function toggleFollow() {
+            const followBtn = document.getElementById('followBtn');
+            profileData.isFollowing = !profileData.isFollowing;
+            
+            if (profileData.isFollowing) {
+                followBtn.textContent = 'Raacay';
+                followBtn.classList.add('following');
+            } else {
+                followBtn.textContent = 'Raac';
+                followBtn.classList.remove('following');
+            }
+        }
+
+        function startChat(username) {
+            window.location.href = `sheeko.html?user=${username}`;
+        }
+
+        function openPostModal(postId) {
+            const post = userPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            let modalContent = `
+                <div class="modal-post">
+                    <div class="modal-post-header">
+                        <img src="images/default-profile.png" alt="Profile" class="modal-profile-img">
+                        <div>
+                            <strong>${profileData.username}</strong>
+                            <div class="modal-post-time">${post.timestamp}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-post-content">
+                        <p>${post.content}</p>
+            `;
+
+            if (post.image) {
+                modalContent += `<img src="uploads/${post.image}" class="modal-post-image" alt="Post image">`;
+            }
+
+            if (post.video) {
+                modalContent += `
+                    <video controls class="modal-post-video">
+                        <source src="uploads/${post.video}" type="video/mp4">
+                        Video ma taageero browser-kaaga.
+                    </video>
+                `;
+            }
+
+            if (post.audio) {
+                modalContent += `
+                    <audio controls class="modal-post-audio">
+                        <source src="uploads/${post.audio}" type="audio/mpeg">
+                        Audio ma taageero browser-kaaga.
+                    </audio>
+                `;
+            }
+
+            modalContent += `
+                    </div>
+                    
+                    <div class="modal-post-actions">
+                        <button class="modal-like-btn" onclick="likePost(${post.id})">
+                            ❤️ Like (${post.likes})
+                        </button>
+                        <button class="modal-comment-btn" onclick="showComments(${post.id})">
+                            💬 Comment (${post.comments})
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('postModalContent').innerHTML = modalContent;
+            document.getElementById('postModal').style.display = 'block';
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').style.display = 'none';
+        }
+
+        function likePost(postId) {
+            alert(`Waad jeceshahay post-ka ${postId}`);
+            // In real app, this would send request to backend
+        }
+
+        function showComments(postId) {
+            alert(`Waxaad daawanaysaa comments-ka post-ka ${postId}`);
+            // In real app, this would show comments section
+        }
+    </script>
+</body>
+</html>

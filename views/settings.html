@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Website</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Bogga Hore</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="create-post.html" class="nav-link">Samee Post</a>
+                <a href="user-list.html" class="nav-link">Isticmaalayaal</a>
+                <a href="/logout" class="nav-link logout">Ka Bax</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="settings-container">
+            <h1>Settings-ka Profile-ka</h1>
+            <p>Halkan waxaad bedeli kartaa macluumaadka akoonkaaga</p>
+
+            <div class="settings-tabs">
+                <button class="tab-btn active" onclick="openTab('profile')">Profile</button>
+                <button class="tab-btn" onclick="openTab('password')">Password</button>
+                <button class="tab-btn" onclick="openTab('account')">Akoonka</button>
+            </div>
+
+            <!-- Profile Settings Tab -->
+            <div id="profile" class="tab-content active">
+                <form action="/update-profile" method="POST" enctype="multipart/form-data" class="settings-form">
+                    <div class="form-group">
+                        <label for="currentProfileImage">Sawirka Hadda</label>
+                        <div class="current-image">
+                            <img src="images/default-profile.png" id="currentProfileImg" alt="Profile current">
+                            <button type="button" onclick="document.getElementById('profileImage').click()" class="change-image-btn">Bedel Sawirka</button>
+                        </div>
+                        <input type="file" id="profileImage" name="profileImage" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" value="zaki4548" required>
+                        <small>Username-kaan waa mid aan isticmaale kale awoodin inay isticmaalaan</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Magaca</label>
+                        <input type="text" id="name" name="name" value="Zaki" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" name="bio" rows="4" placeholder="Ku qor wax ka faahfaahin nafteeda...">Waxaan jeclahay technology iyo programming!</textarea>
+                    </div>
+
+                    <button type="submit" class="save-btn">Keydi Cusboonaysiinta</button>
+                </form>
+            </div>
+
+            <!-- Password Settings Tab -->
+            <div id="password" class="tab-content">
+                <form action="/update-password" method="POST" class="settings-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Password-ka Hadda</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                        <small>Waa inaad gelisaa password-ka hadda si aad u bedeshid password cusub</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">Password Cusub</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirm Password Cusub</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                    </div>
+
+                    <button type="submit" class="save-btn">Bedel Password</button>
+                </form>
+            </div>
+
+            <!-- Account Settings Tab -->
+            <div id="account" class="tab-content">
+                <div class="danger-zone">
+                    <h3>🔴 Goobta Khatarta Ah</h3>
+                    <p>Ficilada hoose waa mid aan dib loogu soo celin karin</p>
+
+                    <div class="danger-actions">
+                        <div class="danger-item">
+                            <h4>Tirtir Akoonka</h4>
+                            <p>Markaad tirtirto akoonkaaga, dhammaan macluumaadkaaga waa la tirtiri doonaa</p>
+                            <button type="button" class="delete-btn" onclick="showDeleteConfirmation()">Tirtir Akoonka</button>
+                        </div>
+
+                        <div class="danger-item">
+                            <h4>Download Macluumaadkaaga</h4>
+                            <p>Soo deji dhammaan macluumaadkaaga (posts, comments, iwm)</p>
+                            <button type="button" class="download-btn">Soo Deji Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>🔴 Digniin Culus!</h3>
+            <p>Ma hubtaa inaad rabto inaad tirtirto akoonkaaga?</p>
+            <p><strong>Dhammaan data-kaaga iyo akoonka waa la tirtiri doonaa aan dib loogu soo celin karin!</strong></p>
+            
+            <div class="modal-actions">
+                <button type="button" class="cancel-btn" onclick="hideDeleteConfirmation()">Jooji</button>
+                <button type="button" class="confirm-delete-btn" onclick="deleteAccount()">Haa, Tirtir Akoonka</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all tab buttons
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+
+            // Show the selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to the clicked tab button
+            event.currentTarget.classList.add('active');
+        }
+
+        // Image preview
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('currentProfileImg').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Password validation
+        document.querySelector('form[action="/update-password"]').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (newPassword !== confirmNewPassword) {
+                e.preventDefault();
+                alert('Password-ka cusub ma qabanayso!');
+                return false;
+            }
+
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('Password-ku waa inuu ka yaraadaa 6 xaraf!');
+                return false;
+            }
+        });
+
+        // Delete account confirmation
+        function showDeleteConfirmation() {
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function hideDeleteConfirmation() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function deleteAccount() {
+            // In real app, this would send request to backend
+            alert('Akoonkaaga waa la tirtiray!');
+            window.location.href = 'register.html';
+        }
+
+        // Username to lowercase
+        document.getElementById('username').addEventListener('blur', function() {
+            this.value = this.value.toLowerCase();
+        });
+    </script>
+</body>
+</html>

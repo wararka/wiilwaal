@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diiwaangeli - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="register-box">
+            <div class="header">
+                <h1>Diiwaangeli Akoon</h1>
+                <p>Samee akoon cusub si aad ugu biirto bulshadeena</p>
+            </div>
+
+            <form action="/register" method="POST" enctype="multipart/form-data" class="register-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="Tusaale: zaki ama zaki4548">
+                    <small>Username-kaan waa inuu noqdaa mid aad ku magacaabanayso</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Magaca</label>
+                    <input type="text" id="name" name="name" required 
+                           placeholder="Magacaaga oo dhan">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Geli password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                           placeholder="Geli password mar labaad">
+                </div>
+
+                <div class="form-group">
+                    <label for="profileImage">Sawirka Profile-ka (ikhtiyaar)</label>
+                    <input type="file" id="profileImage" name="profileImage" 
+                           accept="image/*" class="file-input">
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                    <label for="agreeTerms">Waan ogolahay shuruudaha iyo siyasadaha</label>
+                </div>
+
+                <button type="submit" class="register-btn">Diiwaangeli</button>
+            </form>
+
+            <div class="login-link">
+                <p>Hore u diiwaangashay? <a href="login.html">Soo gal akoonkaaga</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for form validation
+        document.querySelector('.register-form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Password-ku ma qabanayso! Fadlan hubi inaad isku qorayso password-ka.');
+                return false;
+            }
+
+            if (password.length < 6) {
+                e.preventDefault();
+                alert('Password-ku waa inuu ka yaraadaa 6 xaraf!');
+                return false;
+            }
+        });
+
+        // Username to lowercase
+        document.getElementById('username').addEventListener('blur', function() {
+            this.value = this.value.toLowerCase();
+        });
+    </script>
+</body>
+</html>

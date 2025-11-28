@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Website Admin</h2>
+            </div>
+            
+            <div class="admin-info">
+                <span class="admin-badge">👑 Admin</span>
+                <span class="user-name">Zaki</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Bogga Hore</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="/logout" class="nav-link logout">Ka Bax</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="admin-container">
+            <!-- Admin Header -->
+            <div class="admin-header">
+                <h1>Admin Panel</h1>
+                <p>Maamul website-ka iyo isticmaalayaasha</p>
+                
+                <div class="admin-stats">
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <strong id="totalUsersAdmin">156</strong>
+                            <span>Isticmaalayaal</span>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-info">
+                            <strong id="totalPostsAdmin">892</strong>
+                            <span>Posts</span>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">💬</div>
+                        <div class="stat-info">
+                            <strong id="totalCommentsAdmin">2,456</strong>
+                            <span>Comments</span>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-info">
+                            <strong id="reportsCount">12</strong>
+                            <span>Reports</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tabs -->
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" onclick="showAdminTab('users')">Isticmaalayaal</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('posts')">Posts</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('reports')">Reports</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('messages')">Fariimaha</button>
+                <button class="admin-tab-btn" onclick="showAdminTab('settings')">Admin Settings</button>
+            </div>
+
+            <!-- Users Management Tab -->
+            <div id="users" class="admin-tab-content active">
+                <div class="tab-header">
+                    <h3>Maamul Isticmaalayaasha</h3>
+                    <div class="tab-actions">
+                        <input type="text" id="searchUsersAdmin" placeholder="Raadi isticmaale..." onkeyup="searchAdminUsers()">
+                        <button class="export-btn" onclick="exportUsers()">Soo Deji Users</button>
+                    </div>
+                </div>
+
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Magac</th>
+                                <th>Joined</th>
+                                <th>Posts</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Posts Management Tab -->
+            <div id="posts" class="admin-tab-content">
+                <div class="tab-header">
+                    <h3>Maamul Posts-yada</h3>
+                    <div class="tab-actions">
+                        <input type="text" id="searchPostsAdmin" placeholder="Raadi post..." onkeyup="searchAdminPosts()">
+                        <select id="postFilter" onchange="filterAdminPosts()">
+                            <option value="all">Dhammaan</option>
+                            <option value="reported">Reported</option>
+                            <option value="media">With Media</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Content</th>
+                                <th>Type</th>
+                                <th>Likes</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="postsTableBody">
+                            <!-- Posts will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports" class="admin-tab-content">
+                <div class="tab-header">
+                    <h3>Reports-ka la soo Gudbiyay</h3>
+                    <div class="tab-actions">
+                        <select id="reportStatusFilter" onchange="filterReports()">
+                            <option value="all">Dhammaan</option>
+                            <option value="pending">Pending</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="reports-list" id="reportsList">
+                    <!-- Reports will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Messages Tab -->
+            <div id="messages" class="admin-tab-content">
+                <div class="tab-header">
+                    <h3>Dir Fariin Dadka</h3>
+                    <p>U dir fariin dadka isticmaalaya ama dhammaan isticmaalayaasha</p>
+                </div>
+
+                <div class="message-composer">
+                    <div class="form-group">
+                        <label for="messageRecipient">U Dir:</label>
+                        <select id="messageRecipient">
+                            <option value="all">Dhammaan Isticmaalayaasha</option>
+                            <option value="specific">Qof Gaar ah</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="specificUserGroup" style="display: none;">
+                        <label for="specificUser">Dooro Isticmaale:</label>
+                        <select id="specificUser">
+                            <!-- Users will be loaded here -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminMessageType">Nooca Fariinta:</label>
+                        <select id="adminMessageType">
+                            <option value="info">Macluumaad</option>
+                            <option value="warning">Digniin</option>
+                            <option value="important">Muhiim ah</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminMessage">Fariinta:</label>
+                        <textarea id="adminMessage" rows="6" placeholder="Qor fariintaada halkan..."></textarea>
+                    </div>
+
+                    <button class="send-admin-message-btn" onclick="sendAdminMessage()">📤 Dir Fariinta</button>
+                </div>
+
+                <div class="sent-messages">
+                    <h4>Fariimaha la Direy</h4>
+                    <div id="sentMessagesList">
+                        <!-- Sent messages will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Settings Tab -->
+            <div id="settings" class="admin-tab-content">
+                <div class="tab-header">
+                    <h3>Website Settings</h3>
+                    <p>Bedel settings-ka website-ka oo dhan</p>
+                </div>
+
+                <div class="admin-settings">
+                    <div class="setting-group">
+                        <h4>🚫 Block Users</h4>
+                        <div class="setting-item">
+                            <label for="blockUser">Block Isticmaale:</label>
+                            <select id="blockUser">
+                                <!-- Users will be loaded here -->
+                            </select>
+                            <button class="block-btn" onclick="blockUser()">Block</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h4>🔧 Website Settings</h4>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="maintenanceMode"> Maintenance Mode
+                            </label>
+                            <small>Marka la furan yahay, dadka kale ma isticmaali karaan website-ka</small>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="allowRegistrations" checked> Oggolow Diiwaangelinta Cusub
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="maxFileSize">Ugu Badnaan File Size (MB):</label>
+                            <input type="number" id="maxFileSize" value="50" min="1" max="100">
+                        </div>
+                    </div>
+
+                    <div class="setting-group danger-zone">
+                        <h4>🔴 Goobta Khatarta Ah</h4>
+                        <div class="setting-item">
+                            <p>Ficiladan waa mid aan dib loogu soo celin karin!</p>
+                            <button class="danger-btn" onclick="showDatabaseModal()">Nadiifi Database</button>
+                            <button class="danger-btn" onclick="showResetModal()">Dib U Bilow Website</button>
+                        </div>
+                    </div>
+
+                    <button class="save-settings-btn" onclick="saveAdminSettings()">💾 Keydi Settings-ka</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- User Detail Modal -->
+    <div id="userDetailModal" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <button class="close-btn" onclick="closeUserDetailModal()">×</button>
+            <div id="userDetailContent">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div id="postDetailModal" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <button class="close-btn" onclick="closePostDetailModal()">×</button>
+            <div id="postDetailContent">
+                <!-- Post details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Danger Action Modals -->
+    <div id="databaseModal" class="modal" style="display: none;">
+        <div class="modal-content danger-modal">
+            <h3>🔴 Digniin Culus!</h3>
+            <p>Ma hubtaa inaad rabto inaad nadiifiso database-ka?</p>
+            <p><strong>Dhammaan data-ka waa la tirtiri doonaa aan dib loogu soo celin karin!</strong></p>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeDatabaseModal()">Jooji</button>
+                <button class="confirm-danger-btn" onclick="cleanDatabase()">Haa, Nadiifi Database</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resetModal" class="modal" style="display: none;">
+        <div class="modal-content danger-modal">
+            <h3>🔴 Digniin Aad u Culus!</h3>
+            <p>Ma hubtaa inaad rabto inaad dib u bilowdo website-ka?</p>
+            <p><strong>Dhammaan data-ka iyo settings-ka waa la tirtiri doonaa!</strong></p>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeResetModal()">Jooji</button>
+                <button class="confirm-danger-btn" onclick="resetWebsite()">Haa, Dib u Bilow</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock admin data
+        const adminData = {
+            totalUsers: 156,
+            totalPosts: 892,
+            totalComments: 2456,
+            reports: 12
+        };
+
+        const adminUsers = [
+            { id: 1, username: 'zaki4548', name: 'Zaki', joinDate: '2024-01-01', posts: 15, status: 'active', isBlocked: false },
+            { id: 2, username: 'cabdullahi', name: 'Cabdullahi', joinDate: '2024-01-05', posts: 8, status: 'active', isBlocked: false },
+            { id: 3, username: 'safiya', name: 'Safiya', joinDate: '2023-12-15', posts: 32, status: 'active', isBlocked: false },
+            { id: 4, username: 'maxamed', name: 'Maxamed', joinDate: '2024-01-10', posts: 3, status: 'inactive', isBlocked: false },
+            { id: 5, username: 'fadumo', name: 'Fadumo', joinDate: '2023-11-20', posts: 28, status: 'active', isBlocked: true },
+            { id: 6, username: 'khadra', name: 'Khadra', joinDate: '2024-01-08', posts: 12, status: 'active', isBlocked: false }
+        ];
+
+        const adminPosts = [
+            { id: 1, userId: 1, username: 'zaki4548', content: 'Maanta waa maalin fiican!', type: 'text', likes: 25, date: '2024-01-15', reported: false },
+            { id: 2, userId: 2, username: 'cabdullahi', content: 'Cusub baan ahay!', type: 'text', likes: 8, date: '2024-01-14', reported: true },
+            { id: 3, userId: 3, username: 'safiya', content: 'Sawirka cusub', type: 'image', likes: 45, date: '2024-01-13', reported: false },
+            { id: 4, userId: 1, username: 'zaki4548', content: 'Video tutorial', type: 'video', likes: 89, date: '2024-01-12', reported: true },
+            { id: 5, userId: 5, username: 'fadumo', content: 'Heesta aan jeclahay', type: 'audio', likes: 32, date: '2024-01-11', reported: false }
+        ];
+
+        const adminReports = [
+            { id: 1, type: 'post', targetId: 2, reporter: 'user123', reason: 'Spam content', status: 'pending', date: '2024-01-15' },
+            { id: 2, type: 'user', targetId: 5, reporter: 'user456', reason: 'Inappropriate behavior', status: 'pending', date: '2024-01-14' },
+            { id: 3, type: 'post', targetId: 4, reporter: 'user789', reason: 'Copyright violation', status: 'resolved', date: '2024-01-13' }
+        ];
+
+        const sentMessages = [
+            { id: 1, to: 'all', type: 'info', message: 'Website maintenance tonight at 2AM', date: '2024-01-15 10:00' },
+            { id: 2, to: 'zaki4548', type: 'warning', message: 'Please review community guidelines', date: '2024-01-14 15:30' }
+        ];
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAdminStats();
+            loadUsersTable();
+            loadPostsTable();
+            loadReports();
+            loadMessageUsers();
+            loadSentMessages();
+            setupAdminTabs();
+        });
+
+        function updateAdminStats() {
+            document.getElementById('totalUsersAdmin').textContent = adminData.totalUsers;
+            document.getElementById('totalPostsAdmin').textContent = adminData.totalPosts;
+            document.getElementById('totalCommentsAdmin').textContent = adminData.totalComments;
+            document.getElementById('reportsCount').textContent = adminData.reports;
+        }
+
+        function showAdminTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.admin-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show the selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to the clicked tab button
+            event.currentTarget.classList.add('active');
+        }
+
+        function setupAdminTabs() {
+            // Show recipient selection based on message type
+            document.getElementById('messageRecipient').addEventListener('change', function() {
+                const specificGroup = document.getElementById('specificUserGroup');
+                specificGroup.style.display = this.value === 'specific' ? 'block' : 'none';
+            });
+        }
+
+        // Users Management
+        function loadUsersTable() {
+            const tableBody = document.getElementById('usersTableBody');
+            let tableHTML = '';
+
+            adminUsers.forEach(user => {
+                tableHTML += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>
+                            <strong>${user.username}</strong>
+                            ${user.isBlocked ? '<span class="blocked-badge">BLOCKED</span>' : ''}
+                        </td>
+                        <td>${user.name}</td>
+                        <td>${formatDate(user.joinDate)}</td>
+                        <td>${user.posts}</td>
+                        <td>
+                            <span class="status-badge ${user.status}">${user.status}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" onclick="viewUserDetails(${user.id})">👁️</button>
+                                <button class="action-btn ${user.isBlocked ? 'unblock-btn' : 'block-btn'}" 
+                                        onclick="${user.isBlocked ? 'unblockUser' : 'blockUser'}(${user.id})">
+                                    ${user.isBlocked ? '🚫' : '✅'}
+                                </button>
+                                <button class="action-btn message-btn" onclick="messageUser('${user.username}')">💬</button>
+                                <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = tableHTML;
+        }
+
+        function searchAdminUsers() {
+            const searchTerm = document.getElementById('searchUsersAdmin').value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTableBody tr');
+
+            rows.forEach(row => {
+                const username = row.cells[1].textContent.toLowerCase();
+                const name = row.cells[2].textContent.toLowerCase();
+                
+                if (username.includes(searchTerm) || name.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Posts Management
+        function loadPostsTable() {
+            const tableBody = document.getElementById('postsTableBody');
+            let tableHTML = '';
+
+            adminPosts.forEach(post => {
+                tableHTML += `
+                    <tr>
+                        <td>${post.id}</td>
+                        <td>${post.username}</td>
+                        <td class="post-content-cell">
+                            ${post.content.substring(0, 50)}${post.content.length > 50 ? '...' : ''}
+                            ${post.reported ? '<span class="reported-badge">REPORTED</span>' : ''}
+                        </td>
+                        <td>
+                            <span class="type-badge ${post.type}">${post.type}</span>
+                        </td>
+                        <td>${post.likes}</td>
+                        <td>${formatDate(post.date)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" onclick="viewPostDetails(${post.id})">👁️</button>
+                                <button class="action-btn delete-btn" onclick="deletePost(${post.id})">🗑️</button>
+                                ${post.reported ? '<button class="action-btn resolve-btn" onclick="resolveReport(' + post.id + ')">✅</button>' : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = tableHTML;
+        }
+
+        function searchAdminPosts() {
+            const searchTerm = document.getElementById('searchPostsAdmin').value.toLowerCase();
+            const rows = document.querySelectorAll('#postsTableBody tr');
+
+            rows.forEach(row => {
+                const content = row.cells[2].textContent.toLowerCase();
+                const username = row.cells[1].textContent.toLowerCase();
+                
+                if (content.includes(searchTerm) || username.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function filterAdminPosts() {
+            const filter = document.getElementById('postFilter').value;
+            const rows = document.querySelectorAll('#postsTableBody tr');
+
+            rows.forEach(row => {
+                const isReported = row.querySelector('.reported-badge');
+                
+                if (filter === 'all' || 
+                    (filter === 'reported' && isReported) ||
+                    (filter === 'media' && !row.cells[3].textContent.includes('text'))) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Reports Management
+        function loadReports() {
+            const reportsList = document.getElementById('reportsList');
+            let reportsHTML = '';
+
+            adminReports.forEach(report => {
+                reportsHTML += `
+                    <div class="report-item ${report.status}">
+                        <div class="report-header">
+                            <span class="report-type">${report.type.toUpperCase()}</span>
+                            <span class="report-status ${report.status}">${report.status}</span>
+                            <span class="report-date">${formatDate(report.date)}</span>
+                        </div>
+                        <div class="report-content">
+                            <p><strong>Reason:</strong> ${report.reason}</p>
+                            <p><strong>Reporter:</strong> ${report.reporter}</p>
+                            <p><strong>Target ID:</strong> ${report.targetId}</p>
+                        </div>
+                        <div class="report-actions">
+                            ${report.status === 'pending' ? `
+                                <button class="resolve-btn" onclick="resolveReport(${report.id})">Resolve</button>
+                                <button class="ignore-btn" onclick="ignoreReport(${report.id})">Ignore</button>
+                            ` : ''}
+                            <button class="view-btn" onclick="viewReportDetails(${report.id})">View Details</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            reportsList.innerHTML = reportsHTML;
+        }
+
+        function filterReports() {
+            const filter = document.getElementById('reportStatusFilter').value;
+            const reports = document.querySelectorAll('.report-item');
+
+            reports.forEach(report => {
+                if (filter === 'all' || report.classList.contains(filter)) {
+                    report.style.display = 'block';
+                } else {
+                    report.style.display = 'none';
+                }
+            });
+        }
+
+        // Messages Management
+        function loadMessageUsers() {
+            const userSelect = document.getElementById('specificUser');
+            const blockSelect = document.getElementById('blockUser');
+            
+            let optionsHTML = '<option value="">Dooro isticmaale...</option>';
+            
+            adminUsers.forEach(user => {
+                if (!user.isBlocked) {
+                    optionsHTML += `<option value="${user.username}">${user.username} (${user.name})</option>`;
+                }
+            });
+
+            userSelect.innerHTML = optionsHTML;
+            blockSelect.innerHTML = optionsHTML;
+        }
+
+        function loadSentMessages() {
+            const messagesList = document.getElementById('sentMessagesList');
+            let messagesHTML = '';
+
+            sentMessages.forEach(msg => {
+                messagesHTML += `
+                    <div class="sent-message">
+                        <div class="message-header">
+                            <span class="message-to">To: ${msg.to}</span>
+                            <span class="message-type ${msg.type}">${msg.type}</span>
+                            <span class="message-date">${msg.date}</span>
+                        </div>
+                        <div class="message-content">${msg.message}</div>
+                    </div>
+                `;
+            });
+
+            messagesList.innerHTML = messagesHTML;
+        }
+
+        function sendAdminMessage() {
+            const recipient = document.getElementById('messageRecipient').value;
+            const specificUser = document.getElementById('specificUser').value;
+            const messageType = document.getElementById('adminMessageType').value;
+            const message = document.getElementById('adminMessage').value;
+
+            if (!message.trim()) {
+                alert('Fadlan geli fariinta!');
+                return;
+            }
+
+            if (recipient === 'specific' && !specificUser) {
+                alert('Fadlan dooro isticmaale!');
+                return;
+            }
+
+            const newMessage = {
+                id: sentMessages.length + 1,
+                to: recipient === 'all' ? 'all' : specificUser,
+                type: messageType,
+                message: message,
+                date: new Date().toLocaleString()
+            };
+
+            sentMessages.unshift(newMessage);
+            loadSentMessages();
+
+            // Clear form
+            document.getElementById('adminMessage').value = '';
+
+            alert(`Fariinta si guul leh ayaa loo diray ${recipient === 'all' ? 'dhammaan isticmaalayaasha' : specificUser}`);
+        }
+
+        // Action Functions
+        function viewUserDetails(userId) {
+            const user = adminUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            const modalContent = `
+                <h3>Macluumaadka Isticmaale: ${user.username}</h3>
+                <div class="user-details">
+                    <p><strong>ID:</strong> ${user.id}</p>
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Magac:</strong> ${user.name}</p>
+                    <p><strong>Joined:</strong> ${formatDate(user.joinDate)}</p>
+                    <p><strong>Posts:</strong> ${user.posts}</p>
+                    <p><strong>Status:</strong> <span class="status-badge ${user.status}">${user.status}</span></p>
+                    <p><strong>Blocked:</strong> ${user.isBlocked ? '✅ Haa' : '❌ Maya'}</p>
+                </div>
+                <div class="user-actions">
+                    <button class="action-btn ${user.isBlocked ? 'unblock-btn' : 'block-btn'}" 
+                            onclick="${user.isBlocked ? 'unblockUser' : 'blockUser'}(${user.id}); closeUserDetailModal();">
+                        ${user.isBlocked ? '🚫 Unblock' : '✅ Block'}
+                    </button>
+                    <button class="action-btn message-btn" onclick="messageUser('${user.username}'); closeUserDetailModal();">
+                        💬 Fariin
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteUser(${user.id}); closeUserDetailModal();">
+                        🗑️ Tirtir
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('userDetailContent').innerHTML = modalContent;
+            document.getElementById('userDetailModal').style.display = 'block';
+        }
+
+        function viewPostDetails(postId) {
+            const post = adminPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            const modalContent = `
+                <h3>Macluumaadka Post-ka: #${post.id}</h3>
+                <div class="post-details">
+                    <p><strong>User:</strong> ${post.username}</p>
+                    <p><strong>Type:</strong> ${post.type}</p>
+                    <p><strong>Likes:</strong> ${post.likes}</p>
+                    <p><strong>Date:</strong> ${formatDate(post.date)}</p>
+                    <p><strong>Reported:</strong> ${post.reported ? '✅ Haa' : '❌ Maya'}</p>
+                    <div class="post-content">
+                        <strong>Content:</strong>
+                        <p>${post.content}</p>
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn delete-btn" onclick="deletePost(${post.id}); closePostDetailModal();">
+                        🗑️ Tirtir Post
+                    </button>
+                    ${post.reported ? `
+                        <button class="action-btn resolve-btn" onclick="resolveReport(${post.id}); closePostDetailModal();">
+                            ✅ Resolve Report
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('postDetailContent').innerHTML = modalContent;
+            document.getElementById('postDetailModal').style.display = 'block';
+        }
+
+        function blockUser(userId) {
+            const user = adminUsers.find(u => u.id === userId);
+            if (user) {
+                user.isBlocked = true;
+                loadUsersTable();
+                alert(`🚫 ${user.username} waa la block-gareeyay!`);
+            }
+        }
+
+        function unblockUser(userId) {
+            const user = adminUsers.find(u => u.id === userId);
+            if (user) {
+                user.isBlocked = false;
+                loadUsersTable();
+                alert(`✅ ${user.username} waa la unblock-gareeyay!`);
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Ma hubtaa inaad rabto inaad tirtirto isticmaalahan?\n\nDhammaan posts-yadiisa iyo data-kiisa waa la tirtiri doonaa!')) {
+                const index = adminUsers.findIndex(u => u.id === userId);
+                if (index !== -1) {
+                    adminUsers.splice(index, 1);
+                    adminData.totalUsers--;
+                    updateAdminStats();
+                    loadUsersTable();
+                    alert('Isticmaalaha waa la tirtiray!');
+                }
+            }
+        }
+
+        function deletePost(postId) {
+            if (confirm('Ma hubtaa inaad rabto inaad tirtirto post-kan?')) {
+                const index = adminPosts.findIndex(p => p.id === postId);
+                if (index !== -1) {
+                    adminPosts.splice(index, 1);
+                    adminData.totalPosts--;
+                    updateAdminStats();
+                    loadPostsTable();
+                    alert('Post-ka waa la tirtiray!');
+                }
+            }
+        }
+
+        function resolveReport(reportId) {
+            const report = adminReports.find(r => r.id === reportId);
+            if (report) {
+                report.status = 'resolved';
+                loadReports();
+                alert('Report-ka waa la xalliyay!');
+            }
+        }
+
+        function ignoreReport(reportId) {
+            if (confirm('Ma hubtaa inaad rabto inaad iska indhato report-kan?')) {
+                const index = adminReports.findIndex(r => r.id === reportId);
+                if (index !== -1) {
+                    adminReports.splice(index, 1);
+                    adminData.reports--;
+                    updateAdminStats();
+                    loadReports();
+                    alert('Report-ka waa la iska indhatay!');
+                }
+            }
+        }
+
+        function messageUser(username) {
+            document.getElementById('messageRecipient').value = 'specific';
+            document.getElementById('specificUserGroup').style.display = 'block';
+            document.getElementById('specificUser').value = username;
+            showAdminTab('messages');
+        }
+
+        function exportUsers() {
+            alert('Users data waa la soo dejinyay CSV file!');
+            // In real app, this would generate and download CSV
+        }
+
+        // Settings Functions
+        function saveAdminSettings() {
+            const maintenanceMode = document.getElementById('maintenanceMode').checked;
+            const allowRegistrations = document.getElementById('allowRegistrations').checked;
+            const maxFileSize = document.getElementById('maxFileSize').value;
+
+            alert(`Settings-ka waa la keydiyay!\n\nMaintenance Mode: ${maintenanceMode}\nAllow Registrations: ${allowRegistrations}\nMax File Size: ${maxFileSize}MB`);
+        }
+
+        function showDatabaseModal() {
+            document.getElementById('databaseModal').style.display = 'block';
+        }
+
+        function closeDatabaseModal() {
+            document.getElementById('databaseModal').style.display = 'none';
+        }
+
+        function showResetModal() {
+            document.getElementById('resetModal').style.display = 'block';
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').style.display = 'none';
+        }
+
+        function cleanDatabase() {
+            if (confirm('TANI WAA FICIL AAD U KHATAR AH!\n\nMa hubtaa inaad rabto inaad nadiifiso database-ka?')) {
+                alert('Database-ka waa la nadiifiyay! Dhammaan data-ka waa la tirtiray.');
+                closeDatabaseModal();
+            }
+        }
+
+        function resetWebsite() {
+            if (confirm('TANI WAA FICIL AAD U KHATAR AH!\n\nWebsite-ka oo dhan waa la tirtiri doonaa!\nMa hubtaa?')) {
+                alert('Website-ka waa la dib u bilowbay! Dhammaan data-ka waa la tirtiray.');
+                closeResetModal();
+            }
+        }
+
+        // Utility Functions
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US');
+        }
+
+        function closeUserDetailModal() {
+            document.getElementById('userDetailModal').style.display = 'none';
+        }
+
+        function closePostDetailModal() {
+            document.getElementById('postDetailModal').style.display = 'none';
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const userModal = document.getElementById('userDetailModal');
+            const postModal = document.getElementById('postDetailModal');
+            const dbModal = document.getElementById('databaseModal');
+            const resetModal = document.getElementById('resetModal');
+            
+            if (event.target === userModal) closeUserDetailModal();
+            if (event.target === postModal) closePostDetailModal();
+            if (event.target === dbModal) closeDatabaseModal();
+            if (event.target === resetModal) closeResetModal();
+        });
+    </script>
+</body>
+</html>

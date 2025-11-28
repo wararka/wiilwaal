@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheeko - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Website</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Bogga Hore</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="create-post.html" class="nav-link">Samee Post</a>
+                <a href="user-list.html" class="nav-link">Isticmaalayaal</a>
+                <a href="/logout" class="nav-link logout">Ka Bax</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="chat-container">
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar">
+                <div class="sidebar-header">
+                    <h3>Sheekooyinka</h3>
+                    <button class="new-chat-btn" onclick="showNewChatModal()">+ Sheeko Cusub</button>
+                </div>
+
+                <div class="chat-search">
+                    <input type="text" id="chatSearch" placeholder="Raadi sheeko...">
+                </div>
+
+                <div class="chats-list" id="chatsList">
+                    <!-- Active chats will be loaded here -->
+                </div>
+
+                <div class="sidebar-footer">
+                    <div class="online-status">
+                        <div class="status-indicator online"></div>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Main Area -->
+            <div class="chat-main">
+                <div class="chat-header" id="chatHeader">
+                    <div class="no-chat-selected">
+                        <h3>Dooro sheeko si aad u bilowdo</h3>
+                        <p>Guji "Sheeko Cusub" si aad u bilowdo sheeko cusub</p>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will be displayed here -->
+                    <div class="welcome-message">
+                        <p>🔒 Dhammaan sheekooyinka waa aanamn</p>
+                        <p>Waxa kaliya oo arki kara labada qof ee sheekada</p>
+                    </div>
+                </div>
+
+                <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                    <div class="chat-input-tools">
+                        <button class="tool-btn" onclick="toggleMediaOptions()">📎</button>
+                        <button class="tool-btn" onclick="toggleEmojiPicker()">😊</button>
+                        
+                        <div class="media-options" id="mediaOptions" style="display: none;">
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="sendImage(this.files[0])">
+                            <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="sendVideo(this.files[0])">
+                            <input type="file" id="audioInput" accept="audio/*" style="display: none;" onchange="sendAudio(this.files[0])">
+                            
+                            <button class="media-option-btn" onclick="document.getElementById('imageInput').click()">🖼️ Sawir</button>
+                            <button class="media-option-btn" onclick="document.getElementById('videoInput').click()">🎥 Video</button>
+                            <button class="media-option-btn" onclick="document.getElementById('audioInput').click()">🎵 Audio</button>
+                        </div>
+
+                        <div class="emoji-picker" id="emojiPicker" style="display: none;">
+                            <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
+                            <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+                            <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+                            <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+                            <button class="emoji-btn" onclick="addEmoji('🎉')">🎉</button>
+                            <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
+                        </div>
+                    </div>
+
+                    <div class="chat-input">
+                        <textarea id="messageInput" placeholder="Type your message..." rows="1"></textarea>
+                        <button class="send-btn" onclick="sendMessage()">📤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- New Chat Modal -->
+    <div id="newChatModal" class="modal" style="display: none;">
+        <div class="modal-content chat-modal">
+            <button class="close-btn" onclick="closeNewChatModal()">×</button>
+            <h3>Bilow Sheeko Cusub</h3>
+            
+            <div class="modal-search">
+                <input type="text" id="userSearch" placeholder="Raadi isticmaale..." onkeyup="searchUsersForChat()">
+            </div>
+
+            <div class="users-list-modal" id="usersListModal">
+                <!-- Users will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Preview Modal -->
+    <div id="mediaPreviewModal" class="modal" style="display: none;">
+        <div class="modal-content media-modal">
+            <button class="close-btn" onclick="closeMediaPreview()">×</button>
+            <div id="mediaPreviewContent">
+                <!-- Media preview will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for chats and users
+        const currentUser = {
+            id: 1,
+            username: 'zaki4548',
+            name: 'Zaki',
+            profileImage: 'default-profile.png'
+        };
+
+        const chatUsers = [
+            {
+                id: 2,
+                username: 'cabdullahi',
+                name: 'Cabdullahi',
+                profileImage: 'user2.jpg',
+                isOnline: true,
+                lastSeen: 'Online now'
+            },
+            {
+                id: 3,
+                username: 'safiya',
+                name: 'Safiya',
+                profileImage: 'user3.jpg',
+                isOnline: false,
+                lastSeen: '2 hours ago'
+            },
+            {
+                id: 4,
+                username: 'maxamed',
+                name: 'Maxamed',
+                profileImage: 'user4.jpg',
+                isOnline: true,
+                lastSeen: 'Online now'
+            },
+            {
+                id: 5,
+                username: 'fadumo',
+                name: 'Fadumo',
+                profileImage: 'user5.jpg',
+                isOnline: false,
+                lastSeen: '1 day ago'
+            }
+        ];
+
+        const mockChats = [
+            {
+                id: 1,
+                user1: currentUser.id,
+                user2: 2, // cabdullahi
+                messages: [
+                    {
+                        id: 1,
+                        sender: currentUser.id,
+                        content: 'Salaamu calaykum! Sidee tahay?',
+                        timestamp: '2024-01-15 10:30:00',
+                        type: 'text'
+                    },
+                    {
+                        id: 2,
+                        sender: 2,
+                        content: 'Wa calaykum salaam! Waan fiicanahay, adiguna?',
+                        timestamp: '2024-01-15 10:31:00',
+                        type: 'text'
+                    },
+                    {
+                        id: 3,
+                        sender: currentUser.id,
+                        content: 'Alhamdulillah waan fiicanahay. Maanta ma imanaysa class-ka?',
+                        timestamp: '2024-01-15 10:32:00',
+                        type: 'text'
+                    },
+                    {
+                        id: 4,
+                        sender: 2,
+                        content: 'Haa, waxaan imanayaa. 2pm baan imanayaa',
+                        timestamp: '2024-01-15 10:33:00',
+                        type: 'text'
+                    }
+                ],
+                lastActivity: '2024-01-15 10:33:00',
+                unread: 0
+            },
+            {
+                id: 2,
+                user1: currentUser.id,
+                user2: 3, // safiya
+                messages: [
+                    {
+                        id: 1,
+                        sender: 3,
+                        content: 'Hi Zaki! Sawirka cusub aad soo daabatay aad ba an tahay! 📸',
+                        timestamp: '2024-01-14 15:20:00',
+                        type: 'text'
+                    },
+                    {
+                        id: 2,
+                        sender: currentUser.id,
+                        content: 'Mahadsanid Safiya! 📷',
+                        timestamp: '2024-01-14 15:22:00',
+                        type: 'text'
+                    },
+                    {
+                        id: 3,
+                        sender: 3,
+                        content: 'Waxaan soo daabanay video-ga cusub. Ma daawan kartaa?',
+                        timestamp: '2024-01-14 15:25:00',
+                        type: 'text'
+                    },
+                    {
+                        id: 4,
+                        sender: currentUser.id,
+                        content: 'video-sample.mp4',
+                        timestamp: '2024-01-14 15:30:00',
+                        type: 'video',
+                        fileUrl: 'videos/sample.mp4'
+                    }
+                ],
+                lastActivity: '2024-01-14 15:30:00',
+                unread: 1
+            }
+        ];
+
+        let activeChatId = null;
+        let activeChat = null;
+
+        // Initialize chat
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChatsList();
+            setupMessageInput();
+        });
+
+        function loadChatsList() {
+            const chatsList = document.getElementById('chatsList');
+            let chatsHTML = '';
+
+            mockChats.forEach(chat => {
+                const otherUserId = chat.user1 === currentUser.id ? chat.user2 : chat.user1;
+                const otherUser = chatUsers.find(user => user.id === otherUserId);
+                
+                if (!otherUser) return;
+
+                const lastMessage = chat.messages[chat.messages.length - 1];
+                const timeAgo = getTimeAgo(lastMessage.timestamp);
+
+                chatsHTML += `
+                    <div class="chat-item ${chat.unread > 0 ? 'unread' : ''}" onclick="openChat(${chat.id})">
+                        <img src="images/${otherUser.profileImage}" alt="${otherUser.username}" class="chat-user-image">
+                        <div class="chat-item-info">
+                            <div class="chat-item-header">
+                                <h4>${otherUser.username}</h4>
+                                <span class="chat-time">${timeAgo}</span>
+                            </div>
+                            <p class="chat-preview">${lastMessage.content.substring(0, 30)}${lastMessage.content.length > 30 ? '...' : ''}</p>
+                            ${chat.unread > 0 ? `<span class="unread-badge">${chat.unread}</span>` : ''}
+                        </div>
+                        <div class="chat-status ${otherUser.isOnline ? 'online' : 'offline'}"></div>
+                    </div>
+                `;
+            });
+
+            chatsList.innerHTML = chatsHTML;
+        }
+
+        function openChat(chatId) {
+            activeChatId = chatId;
+            activeChat = mockChats.find(chat => chat.id === chatId);
+            
+            if (!activeChat) return;
+
+            const otherUserId = activeChat.user1 === currentUser.id ? activeChat.user2 : activeChat.user1;
+            const otherUser = chatUsers.find(user => user.id === otherUserId);
+
+            // Update chat header
+            document.getElementById('chatHeader').innerHTML = `
+                <div class="active-chat-header">
+                    <img src="images/${otherUser.profileImage}" alt="${otherUser.username}" class="chat-header-image">
+                    <div class="chat-header-info">
+                        <h3>${otherUser.username}</h3>
+                        <span class="chat-header-status">${otherUser.isOnline ? '🟢 Online' : `⚫ ${otherUser.lastSeen}`}</span>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button class="header-btn" onclick="showChatInfo(${otherUserId})">ℹ️</button>
+                        <button class="header-btn" onclick="clearChat(${chatId})">🗑️</button>
+                    </div>
+                </div>
+            `;
+
+            // Show messages
+            displayMessages();
+
+            // Show input container
+            document.getElementById('chatInputContainer').style.display = 'block';
+
+            // Mark as read
+            activeChat.unread = 0;
+            loadChatsList();
+        }
+
+        function displayMessages() {
+            const chatMessages = document.getElementById('chatMessages');
+            let messagesHTML = '';
+
+            activeChat.messages.forEach(message => {
+                const isCurrentUser = message.sender === currentUser.id;
+                const messageClass = isCurrentUser ? 'message-outgoing' : 'message-incoming';
+                const sender = isCurrentUser ? currentUser : chatUsers.find(user => user.id === message.sender);
+
+                messagesHTML += `
+                    <div class="message ${messageClass}">
+                        <div class="message-content">
+                            ${message.type === 'text' ? `
+                                <div class="message-text">${message.content}</div>
+                            ` : ''}
+                            
+                            ${message.type === 'image' ? `
+                                <div class="message-media">
+                                    <img src="uploads/${message.fileUrl}" alt="Image" onclick="openMediaPreview('image', '${message.fileUrl}')">
+                                </div>
+                            ` : ''}
+                            
+                            ${message.type === 'video' ? `
+                                <div class="message-media">
+                                    <video controls onclick="openMediaPreview('video', '${message.fileUrl}')">
+                                        <source src="uploads/${message.fileUrl}" type="video/mp4">
+                                    </video>
+                                </div>
+                            ` : ''}
+                            
+                            ${message.type === 'audio' ? `
+                                <div class="message-media">
+                                    <audio controls>
+                                        <source src="uploads/${message.fileUrl}" type="audio/mpeg">
+                                    </audio>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="message-time">${formatTime(message.timestamp)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            chatMessages.innerHTML = messagesHTML;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function setupMessageInput() {
+            const messageInput = document.getElementById('messageInput');
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+
+            if (!content || !activeChat) return;
+
+            const newMessage = {
+                id: activeChat.messages.length + 1,
+                sender: currentUser.id,
+                content: content,
+                timestamp: new Date().toISOString(),
+                type: 'text'
+            };
+
+            activeChat.messages.push(newMessage);
+            activeChat.lastActivity = newMessage.timestamp;
+
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            displayMessages();
+            loadChatsList();
+
+            // Simulate reply (in real app, this would be from other user)
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    const replyMessage = {
+                        id: activeChat.messages.length + 1,
+                        sender: activeChat.user1 === currentUser.id ? activeChat.user2 : activeChat.user1,
+                        content: getRandomReply(),
+                        timestamp: new Date().toISOString(),
+                        type: 'text'
+                    };
+                    
+                    activeChat.messages.push(replyMessage);
+                    activeChat.lastActivity = replyMessage.timestamp;
+                    activeChat.unread = (activeChat.unread || 0) + 1;
+                    
+                    displayMessages();
+                    loadChatsList();
+                }
+            }, 1000 + Math.random() * 4000);
+        }
+
+        function getRandomReply() {
+            const replies = [
+                'Haa, waan fahmay',
+                'Waa runtaa!',
+                'Maxaa dhacay?',
+                'Waan ku waayay',
+                'Soo soco office-ka',
+                'Waad mahadsan tahay',
+                'Ma filanayo wakhtiga',
+                'Berri waan imanayaa',
+                'Sidee ugu jawaabay?',
+                'Waa fikrad wanaagsan!'
+            ];
+            return replies[Math.floor(Math.random() * replies.length)];
+        }
+
+        function sendImage(file) {
+            if (!file || !activeChat) return;
+
+            const newMessage = {
+                id: activeChat.messages.length + 1,
+                sender: currentUser.id,
+                content: file.name,
+                timestamp: new Date().toISOString(),
+                type: 'image',
+                fileUrl: URL.createObjectURL(file)
+            };
+
+            activeChat.messages.push(newMessage);
+            activeChat.lastActivity = newMessage.timestamp;
+            
+            displayMessages();
+            loadChatsList();
+        }
+
+        function sendVideo(file) {
+            if (!file || !activeChat) return;
+
+            const newMessage = {
+                id: activeChat.messages.length + 1,
+                sender: currentUser.id,
+                content: file.name,
+                timestamp: new Date().toISOString(),
+                type: 'video',
+                fileUrl: URL.createObjectURL(file)
+            };
+
+            activeChat.messages.push(newMessage);
+            activeChat.lastActivity = newMessage.timestamp;
+            
+            displayMessages();
+            loadChatsList();
+        }
+
+        function sendAudio(file) {
+            if (!file || !activeChat) return;
+
+            const newMessage = {
+                id: activeChat.messages.length + 1,
+                sender: currentUser.id,
+                content: file.name,
+                timestamp: new Date().toISOString(),
+                type: 'audio',
+                fileUrl: URL.createObjectURL(file)
+            };
+
+            activeChat.messages.push(newMessage);
+            activeChat.lastActivity = newMessage.timestamp;
+            
+            displayMessages();
+            loadChatsList();
+        }
+
+        function toggleMediaOptions() {
+            const mediaOptions = document.getElementById('mediaOptions');
+            mediaOptions.style.display = mediaOptions.style.display === 'none' ? 'block' : 'none';
+            
+            // Hide emoji picker if open
+            document.getElementById('emojiPicker').style.display = 'none';
+        }
+
+        function toggleEmojiPicker() {
+            const emojiPicker = document.getElementById('emojiPicker');
+            emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
+            
+            // Hide media options if open
+            document.getElementById('mediaOptions').style.display = 'none';
+        }
+
+        function addEmoji(emoji) {
+            const messageInput = document.getElementById('messageInput');
+            messageInput.value += emoji;
+            messageInput.focus();
+        }
+
+        function showNewChatModal() {
+            document.getElementById('newChatModal').style.display = 'block';
+            loadUsersForChat();
+        }
+
+        function closeNewChatModal() {
+            document.getElementById('newChatModal').style.display = 'none';
+        }
+
+        function loadUsersForChat() {
+            const usersListModal = document.getElementById('usersListModal');
+            let usersHTML = '';
+
+            chatUsers.forEach(user => {
+                // Don't show current user
+                if (user.id === currentUser.id) return;
+
+                usersHTML += `
+                    <div class="user-chat-item" onclick="startNewChat(${user.id})">
+                        <img src="images/${user.profileImage}" alt="${user.username}" class="user-chat-image">
+                        <div class="user-chat-info">
+                            <h4>${user.username}</h4>
+                            <p>${user.name}</p>
+                            <span class="user-chat-status">${user.isOnline ? '🟢 Online' : '⚫ Offline'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            usersListModal.innerHTML = usersHTML;
+        }
+
+        function searchUsersForChat() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const userItems = document.querySelectorAll('.user-chat-item');
+
+            userItems.forEach(item => {
+                const username = item.querySelector('h4').textContent.toLowerCase();
+                if (username.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function startNewChat(userId) {
+            const existingChat = mockChats.find(chat => 
+                (chat.user1 === currentUser.id && chat.user2 === userId) ||
+                (chat.user1 === userId && chat.user2 === currentUser.id)
+            );
+
+            if (existingChat) {
+                openChat(existingChat.id);
+            } else {
+                // Create new chat
+                const newChat = {
+                    id: mockChats.length + 1,
+                    user1: currentUser.id,
+                    user2: userId,
+                    messages: [],
+                    lastActivity: new Date().toISOString(),
+                    unread: 0
+                };
+                
+                mockChats.push(newChat);
+                openChat(newChat.id);
+                loadChatsList();
+            }
+
+            closeNewChatModal();
+        }
+
+        function showChatInfo(userId) {
+            const user = chatUsers.find(u => u.id === userId);
+            if (user) {
+                alert(`Macluumaadka ${user.username}\n\nMagac: ${user.name}\nStatus: ${user.isOnline ? 'Online' : 'Offline'}`);
+            }
+        }
+
+        function clearChat(chatId) {
+            if (confirm('Ma hubtaa inaad rabto inaad tirtirto dhammaan sheekadan?')) {
+                const chat = mockChats.find(c => c.id === chatId);
+                if (chat) {
+                    chat.messages = [];
+                    displayMessages();
+                    loadChatsList();
+                    alert('Sheekada waa la nadiifiyay!');
+                }
+            }
+        }
+
+        function openMediaPreview(type, fileUrl) {
+            let previewHTML = '';
+
+            if (type === 'image') {
+                previewHTML = `<img src="uploads/${fileUrl}" alt="Preview" style="max-width: 100%; max-height: 80vh;">`;
+            } else if (type === 'video') {
+                previewHTML = `
+                    <video controls style="max-width: 100%; max-height: 80vh;">
+                        <source src="uploads/${fileUrl}" type="video/mp4">
+                    </video>
+                `;
+            }
+
+            document.getElementById('mediaPreviewContent').innerHTML = previewHTML;
+            document.getElementById('mediaPreviewModal').style.display = 'block';
+        }
+
+        function closeMediaPreview() {
+            document.getElementById('mediaPreviewModal').style.display = 'none';
+        }
+
+        // Utility functions
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const messageTime = new Date(timestamp);
+            const diffMs = now - messageTime;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Now';
+            if (diffMins < 60) return `${diffMins}m`;
+            if (diffHours < 24) return `${diffHours}h`;
+            if (diffDays < 7) return `${diffDays}d`;
+            return messageTime.toLocaleDateString();
+        }
+
+        function formatTime(timestamp) {
+            return new Date(timestamp).toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const newChatModal = document.getElementById('newChatModal');
+            const mediaPreviewModal = document.getElementById('mediaPreviewModal');
+            
+            if (event.target === newChatModal) closeNewChatModal();
+            if (event.target === mediaPreviewModal) closeMediaPreview();
+        });
+    </script>
+</body>
+</html>

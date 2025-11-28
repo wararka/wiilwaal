@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samee Post - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Website</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Bogga Hore</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="settings.html" class="nav-link">Settings</a>
+                <a href="user-list.html" class="nav-link">Isticmaalayaal</a>
+                <a href="/logout" class="nav-link logout">Ka Bax</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="create-post-container">
+            <h1>Samee Post Cusub</h1>
+            <p>Wadaag fikrad, sawir, video, ama audio</p>
+
+            <form action="/create-post" method="POST" enctype="multipart/form-data" class="create-post-form" id="postForm">
+                <!-- Post Type Selection -->
+                <div class="post-type-selector">
+                    <label>Nooca Post-ka:</label>
+                    <div class="type-options">
+                        <label class="type-option">
+                            <input type="radio" name="postType" value="text" checked onchange="toggleMediaFields()">
+                            <span>📝 Qoraal Kaliya</span>
+                        </label>
+                        <label class="type-option">
+                            <input type="radio" name="postType" value="image" onchange="toggleMediaFields()">
+                            <span>🖼️ Qoraal iyo Sawir</span>
+                        </label>
+                        <label class="type-option">
+                            <input type="radio" name="postType" value="video" onchange="toggleMediaFields()">
+                            <span>🎥 Qoraal iyo Video</span>
+                        </label>
+                        <label class="type-option">
+                            <input type="radio" name="postType" value="audio" onchange="toggleMediaFields()">
+                            <span>🎵 Qoraal iyo Audio</span>
+                        </label>
+                        <label class="type-option">
+                            <input type="radio" name="postType" value="mediaOnly" onchange="toggleMediaFields()">
+                            <span>📁 Sawir, Video, ama Audio Kaliya</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Text Content -->
+                <div class="form-group" id="textContentGroup">
+                    <label for="postContent">Qoraalka Post-ka</label>
+                    <textarea id="postContent" name="content" rows="6" placeholder="Waxaad ka fikirsanaysaa?..." maxlength="1000"></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span>/1000 xaraf
+                    </div>
+                </div>
+
+                <!-- Media Upload Sections -->
+                <div class="media-upload-sections">
+                    <!-- Image Upload -->
+                    <div class="form-group media-group" id="imageGroup" style="display: none;">
+                        <label for="postImage">Sawir (ikhtiyaar)</label>
+                        <input type="file" id="postImage" name="image" accept="image/*" onchange="previewMedia(this, 'imagePreview')">
+                        <div class="media-preview" id="imagePreview"></div>
+                        <small>Fadlan dooro sawir (JPG, PNG, GIF)</small>
+                    </div>
+
+                    <!-- Video Upload -->
+                    <div class="form-group media-group" id="videoGroup" style="display: none;">
+                        <label for="postVideo">Video (ikhtiyaar)</label>
+                        <input type="file" id="postVideo" name="video" accept="video/*" onchange="previewMedia(this, 'videoPreview')">
+                        <div class="media-preview" id="videoPreview"></div>
+                        <small>Fadlan dooro video (MP4, MOV - ugu badnaan 50MB)</small>
+                    </div>
+
+                    <!-- Audio Upload -->
+                    <div class="form-group media-group" id="audioGroup" style="display: none;">
+                        <label for="postAudio">Audio (ikhtiyaar)</label>
+                        <input type="file" id="postAudio" name="audio" accept="audio/*" onchange="previewMedia(this, 'audioPreview')">
+                        <div class="media-preview" id="audioPreview"></div>
+                        <small>Fadlan dooro audio (MP3, WAV - ugu badnaan 20MB)</small>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="form-group">
+                    <label for="postPrivacy">Qarsooni</label>
+                    <select id="postPrivacy" name="privacy">
+                        <option value="public">🔓 Dadka oo dhan (Public)</option>
+                        <option value="friends">👥 Saaxiibada kaliya (Friends)</option>
+                        <option value="private">🔒 Aniga kaliya (Private)</option>
+                    </select>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="preview-btn" onclick="previewPost()">Arag Hore</button>
+                    <button type="submit" class="post-btn" id="postBtn">Soo Daabac Post</button>
+                    <button type="button" class="cancel-btn" onclick="window.location.href='index.html'">Jooji</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Post Preview Modal -->
+        <div id="previewModal" class="modal" style="display: none;">
+            <div class="modal-content preview-modal">
+                <h3>Aragtida Hore ee Post-ka</h3>
+                <div class="preview-content" id="previewContent">
+                    <!-- Preview will be inserted here -->
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closePreview()">Wax Ka Bedel</button>
+                    <button type="button" class="confirm-btn" onclick="submitPost()">Haa, Soo Daabac</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Character counter for text content
+        document.getElementById('postContent').addEventListener('input', function() {
+            const charCount = this.value.length;
+            document.getElementById('charCount').textContent = charCount;
+            
+            // Disable post button if no content and media only is not selected
+            const postType = document.querySelector('input[name="postType"]:checked').value;
+            const postBtn = document.getElementById('postBtn');
+            
+            if (charCount === 0 && postType !== 'mediaOnly') {
+                postBtn.disabled = true;
+                postBtn.title = 'Fadlan geli qoraal ama dooro nooc post kale';
+            } else {
+                postBtn.disabled = false;
+                postBtn.title = '';
+            }
+        });
+
+        // Toggle media fields based on post type
+        function toggleMediaFields() {
+            const postType = document.querySelector('input[name="postType"]:checked').value;
+            
+            // Hide all media groups first
+            document.getElementById('textContentGroup').style.display = 'none';
+            document.getElementById('imageGroup').style.display = 'none';
+            document.getElementById('videoGroup').style.display = 'none';
+            document.getElementById('audioGroup').style.display = 'none';
+            
+            // Show relevant fields based on post type
+            switch(postType) {
+                case 'text':
+                    document.getElementById('textContentGroup').style.display = 'block';
+                    break;
+                case 'image':
+                    document.getElementById('textContentGroup').style.display = 'block';
+                    document.getElementById('imageGroup').style.display = 'block';
+                    break;
+                case 'video':
+                    document.getElementById('textContentGroup').style.display = 'block';
+                    document.getElementById('videoGroup').style.display = 'block';
+                    break;
+                case 'audio':
+                    document.getElementById('textContentGroup').style.display = 'block';
+                    document.getElementById('audioGroup').style.display = 'block';
+                    break;
+                case 'mediaOnly':
+                    document.getElementById('imageGroup').style.display = 'block';
+                    document.getElementById('videoGroup').style.display = 'block';
+                    document.getElementById('audioGroup').style.display = 'block';
+                    break;
+            }
+            
+            // Update post button state
+            document.getElementById('postContent').dispatchEvent(new Event('input'));
+        }
+
+        // Preview media files
+        function previewMedia(input, previewId) {
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+            
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const fileType = file.type.split('/')[0];
+                
+                if (fileType === 'image') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">`;
+                    }
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'video') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `
+                            <video controls style="max-width: 300px; max-height: 200px; border-radius: 8px;">
+                                <source src="${e.target.result}" type="${file.type}">
+                                Video ma taageero browser-kaaga.
+                            </video>
+                            <p>${file.name}</p>
+                        `;
+                    }
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'audio') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `
+                            <audio controls style="width: 100%;">
+                                <source src="${e.target.result}" type="${file.type}">
+                                Audio ma taageero browser-kaaga.
+                            </audio>
+                            <p>${file.name}</p>
+                        `;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Preview post before publishing
+        function previewPost() {
+            const content = document.getElementById('postContent').value;
+            const postType = document.querySelector('input[name="postType"]:checked').value;
+            const privacy = document.getElementById('postPrivacy').options[document.getElementById('postPrivacy').selectedIndex].text;
+            
+            let previewHTML = `
+                <div class="preview-post">
+                    <div class="preview-header">
+                        <img src="images/default-profile.png" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%;">
+                        <div>
+                            <strong>You</strong>
+                            <div style="font-size: 12px; color: #666;">${privacy}</div>
+                        </div>
+                    </div>
+            `;
+            
+            if (content && postType !== 'mediaOnly') {
+                previewHTML += `<div class="preview-text">${content}</div>`;
+            }
+            
+            // Add media previews
+            const imagePreview = document.getElementById('imagePreview').innerHTML;
+            const videoPreview = document.getElementById('videoPreview').innerHTML;
+            const audioPreview = document.getElementById('audioPreview').innerHTML;
+            
+            if (imagePreview) previewHTML += `<div class="preview-media">${imagePreview}</div>`;
+            if (videoPreview) previewHTML += `<div class="preview-media">${videoPreview}</div>`;
+            if (audioPreview) previewHTML += `<div class="preview-media">${audioPreview}</div>`;
+            
+            previewHTML += `</div>`;
+            
+            document.getElementById('previewContent').innerHTML = previewHTML;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function submitPost() {
+            // In real app, this would submit the form
+            document.getElementById('postForm').submit();
+            
+            // For demo purposes
+            alert('Post-kaaga si guul leh ayaa loo soo daabacay!');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleMediaFields();
+        });
+    </script>
+</body>
+</html>

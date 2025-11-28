@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soo Gal - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="header">
+                <h1>Soo Gal Akoonkaaga</h1>
+                <p>Geli username-kaaga iyo password-kaaga si aad u soo gasho</p>
+            </div>
+
+            <form action="/login" method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="Geli username-kaaga">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Geli password-kaaga">
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">I xusuuso</label>
+                    </div>
+                    <a href="forget-password.html" class="forgot-password">Password ma ilowday?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Soo Gal</button>
+            </form>
+
+            <div class="register-link">
+                <p>Ma haysatid akoon? <a href="register.html">Diiwaangeli hadda</a></p>
+            </div>
+
+            <div class="guest-notice">
+                <p>Markaad soo gasho, waxaad ku soo dhaweyn doontaa <strong>index.html</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Username to lowercase
+        document.getElementById('username').addEventListener('blur', function() {
+            this.value = this.value.toLowerCase();
+        });
+
+        // Form validation
+        document.querySelector('.login-form').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username.trim() === '' || password.trim() === '') {
+                e.preventDefault();
+                alert('Fadlan buuxi dhammaan meelaha bannaan!');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isticmaalayaal - Website</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Website</h2>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" id="searchUsersInput" placeholder="Raadi isticmaale...">
+                <button id="searchUsersBtn">Raadi</button>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Bogga Hore</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="create-post.html" class="nav-link">Samee Post</a>
+                <a href="settings.html" class="nav-link">Settings</a>
+                <a href="/logout" class="nav-link logout">Ka Bax</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="users-container">
+            <div class="users-header">
+                <h1>Isticmaalayaal Website-ka</h1>
+                <p>Hel saaxiibada cusub ama isticmaalayaal kale</p>
+                
+                <div class="users-stats">
+                    <div class="stat-card">
+                        <strong id="totalUsers">156</strong>
+                        <span>Isticmaalayaal</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong id="onlineUsers">23</strong>
+                        <span>Online Hadda</span>
+                    </div>
+                    <div class="stat-card">
+                        <strong id="newUsers">5</strong>
+                        <span>Cusub Maanta</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="users-filters">
+                <div class="filter-group">
+                    <label>Filter by:</label>
+                    <select id="filterOption" onchange="filterUsers()">
+                        <option value="all">Dhammaan</option>
+                        <option value="online">Online Hadda</option>
+                        <option value="new">Cusub</option>
+                        <option value="popular">Popular</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Sort by:</label>
+                    <select id="sortOption" onchange="sortUsers()">
+                        <option value="newest">Cusub</option>
+                        <option value="oldest">Ugugu Quruunka</option>
+                        <option value="name">Magac</option>
+                        <option value="posts">Posts</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Users Grid -->
+            <div class="users-grid" id="usersGrid">
+                <!-- Users will be loaded here dynamically -->
+                <div class="loading">Loading isticmaalayaal...</div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more-section">
+                <button id="loadMoreBtn" class="load-more-btn" onclick="loadMoreUsers()">Ku Dar Isticmaalayaal</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- User Profile Modal -->
+    <div id="userModal" class="modal" style="display: none;">
+        <div class="modal-content user-modal">
+            <button class="close-btn" onclick="closeUserModal()">×</button>
+            <div id="userModalContent">
+                <!-- User profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock users data
+        const usersData = [
+            {
+                id: 1,
+                username: 'zaki4548',
+                name: 'Zaki',
+                bio: 'Waxaan jeclahay technology iyo programming! 🚀',
+                profileImage: 'default-profile.png',
+                joinDate: 'January 2024',
+                isOnline: true,
+                isNew: false,
+                stats: {
+                    posts: 15,
+                    likes: 248,
+                    followers: 45
+                },
+                isFollowing: false
+            },
+            {
+                id: 2,
+                username: 'cabdullahi',
+                name: 'Cabdullahi',
+                bio: 'Student iyo football lover ⚽',
+                profileImage: 'user2.jpg',
+                joinDate: 'February 2024',
+                isOnline: true,
+                isNew: true,
+                stats: {
+                    posts: 8,
+                    likes: 120,
+                    followers: 23
+                },
+                isFollowing: true
+            },
+            {
+                id: 3,
+                username: 'safiya',
+                name: 'Safiya',
+                bio: 'Artist iyo photographer 📸',
+                profileImage: 'user3.jpg',
+                joinDate: 'December 2023',
+                isOnline: false,
+                isNew: false,
+                stats: {
+                    posts: 32,
+                    likes: 567,
+                    followers: 89
+                },
+                isFollowing: false
+            },
+            {
+                id: 4,
+                username: 'maxamed',
+                name: 'Maxamed',
+                bio: 'Business owner 💼',
+                profileImage: 'user4.jpg',
+                joinDate: 'March 2024',
+                isOnline: true,
+                isNew: true,
+                stats: {
+                    posts: 3,
+                    likes: 45,
+                    followers: 12
+                },
+                isFollowing: false
+            },
+            {
+                id: 5,
+                username: 'fadumo',
+                name: 'Fadumo',
+                bio: 'Teacher iyo mother 👩‍🏫',
+                profileImage: 'user5.jpg',
+                joinDate: 'November 2023',
+                isOnline: false,
+                isNew: false,
+                stats: {
+                    posts: 28,
+                    likes: 432,
+                    followers: 67
+                },
+                isFollowing: true
+            },
+            {
+                id: 6,
+                username: 'khadra',
+                name: 'Khadra',
+                bio: 'Doctor 🩺',
+                profileImage: 'user6.jpg',
+                joinDate: 'January 2024',
+                isOnline: true,
+                isNew: false,
+                stats: {
+                    posts: 12,
+                    likes: 198,
+                    followers: 34
+                },
+                isFollowing: false
+            },
+            {
+                id: 7,
+                username: 'cali',
+                name: 'Cali',
+                bio: 'Engineer 🔧',
+                profileImage: 'user7.jpg',
+                joinDate: 'March 2024',
+                isOnline: false,
+                isNew: true,
+                stats: {
+                    posts: 5,
+                    likes: 67,
+                    followers: 18
+                },
+                isFollowing: false
+            },
+            {
+                id: 8,
+                username: 'maryan',
+                name: 'Maryan',
+                bio: 'Writer iyo poet 📝',
+                profileImage: 'user8.jpg',
+                joinDate: 'February 2024',
+                isOnline: true,
+                isNew: false,
+                stats: {
+                    posts: 41,
+                    likes: 789,
+                    followers: 112
+                },
+                isFollowing: true
+            }
+        ];
+
+        let currentUsers = [];
+        let displayedUsers = 6;
+
+        // Initialize users list
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUsers();
+            setupSearch();
+            updateStats();
+        });
+
+        function loadUsers() {
+            currentUsers = [...usersData];
+            displayUsers();
+        }
+
+        function displayUsers() {
+            const usersGrid = document.getElementById('usersGrid');
+            const usersToShow = currentUsers.slice(0, displayedUsers);
+            
+            if (usersToShow.length === 0) {
+                usersGrid.innerHTML = `
+                    <div class="no-users">
+                        <p>Isticmaale lama helin</p>
+                        <p>Tijaabi raadinta kale</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let usersHTML = '';
+
+            usersToShow.forEach(user => {
+                usersHTML += `
+                    <div class="user-card" onclick="openUserProfile(${user.id})">
+                        <div class="user-card-header">
+                            <img src="images/${user.profileImage}" alt="${user.username}" class="user-card-image">
+                            <div class="user-status ${user.isOnline ? 'online' : 'offline'}"></div>
+                            ${user.isNew ? '<div class="new-badge">NEW</div>' : ''}
+                        </div>
+                        
+                        <div class="user-card-info">
+                            <h3 class="user-card-username">${user.username}</h3>
+                            <p class="user-card-name">${user.name}</p>
+                            <p class="user-card-bio">${user.bio}</p>
+                            
+                            <div class="user-card-stats">
+                                <div class="user-stat">
+                                    <strong>${user.stats.posts}</strong>
+                                    <span>Posts</span>
+                                </div>
+                                <div class="user-stat">
+                                    <strong>${user.stats.followers}</strong>
+                                    <span>Followers</span>
+                                </div>
+                            </div>
+                            
+                            <div class="user-card-actions">
+                                <button class="follow-btn ${user.isFollowing ? 'following' : ''}" 
+                                        onclick="event.stopPropagation(); toggleFollow(${user.id})">
+                                    ${user.isFollowing ? 'Raacay' : 'Raac'}
+                                </button>
+                                <button class="message-btn" 
+                                        onclick="event.stopPropagation(); startChat('${user.username}')">
+                                    Fariin
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            usersGrid.innerHTML = usersHTML;
+            
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (displayedUsers >= currentUsers.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+        }
+
+        function setupSearch() {
+            document.getElementById('searchUsersBtn').addEventListener('click', searchUsers);
+            
+            document.getElementById('searchUsersInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchUsers();
+                }
+            });
+
+            document.getElementById('searchUsersInput').addEventListener('input', function() {
+                if (this.value.trim() === '') {
+                    loadUsers();
+                }
+            });
+        }
+
+        function searchUsers() {
+            const searchTerm = document.getElementById('searchUsersInput').value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                loadUsers();
+                return;
+            }
+
+            const filteredUsers = usersData.filter(user => 
+                user.username.toLowerCase().includes(searchTerm) ||
+                user.name.toLowerCase().includes(searchTerm) ||
+                user.bio.toLowerCase().includes(searchTerm)
+            );
+
+            currentUsers = filteredUsers;
+            displayedUsers = 6;
+            displayUsers();
+        }
+
+        function filterUsers() {
+            const filterOption = document.getElementById('filterOption').value;
+            let filteredUsers = [...usersData];
+
+            switch(filterOption) {
+                case 'online':
+                    filteredUsers = usersData.filter(user => user.isOnline);
+                    break;
+                case 'new':
+                    filteredUsers = usersData.filter(user => user.isNew);
+                    break;
+                case 'popular':
+                    filteredUsers = usersData.sort((a, b) => b.stats.followers - a.stats.followers);
+                    break;
+            }
+
+            currentUsers = filteredUsers;
+            displayedUsers = 6;
+            displayUsers();
+        }
+
+        function sortUsers() {
+            const sortOption = document.getElementById('sortOption').value;
+            let sortedUsers = [...currentUsers];
+
+            switch(sortOption) {
+                case 'newest':
+                    sortedUsers.sort((a, b) => b.id - a.id);
+                    break;
+                case 'oldest':
+                    sortedUsers.sort((a, b) => a.id - b.id);
+                    break;
+                case 'name':
+                    sortedUsers.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'posts':
+                    sortedUsers.sort((a, b) => b.stats.posts - a.stats.posts);
+                    break;
+            }
+
+            currentUsers = sortedUsers;
+            displayUsers();
+        }
+
+        function loadMoreUsers() {
+            displayedUsers += 6;
+            displayUsers();
+        }
+
+        function updateStats() {
+            const totalUsers = usersData.length;
+            const onlineUsers = usersData.filter(user => user.isOnline).length;
+            const newUsers = usersData.filter(user => user.isNew).length;
+
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('onlineUsers').textContent = onlineUsers;
+            document.getElementById('newUsers').textContent = newUsers;
+        }
+
+        function toggleFollow(userId) {
+            const user = usersData.find(u => u.id === userId);
+            if (user) {
+                user.isFollowing = !user.isFollowing;
+                displayUsers();
+                
+                // Show notification
+                const action = user.isFollowing ? 'raacay' : 'ka baxay';
+                alert(`Waad ${action} ${user.username}`);
+            }
+        }
+
+        function startChat(username) {
+            window.location.href = `sheeko.html?user=${username}`;
+        }
+
+        function openUserProfile(userId) {
+            const user = usersData.find(u => u.id === userId);
+            if (!user) return;
+
+            const modalContent = `
+                <div class="user-profile-modal">
+                    <div class="user-profile-header">
+                        <img src="images/${user.profileImage}" alt="${user.username}" class="user-modal-image">
+                        <div class="user-modal-info">
+                            <h2>${user.username}</h2>
+                            <p class="user-modal-name">${user.name}</p>
+                            <p class="user-modal-bio">${user.bio}</p>
+                            <p class="user-modal-join">Joined: ${user.joinDate}</p>
+                            <div class="user-modal-status">
+                                <span class="status ${user.isOnline ? 'online' : 'offline'}">
+                                    ${user.isOnline ? '🟢 Online' : '⚫ Offline'}
+                                </span>
+                                ${user.isNew ? '<span class="new-tag">NEW</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-profile-stats">
+                        <div class="user-stat-modal">
+                            <strong>${user.stats.posts}</strong>
+                            <span>Posts</span>
+                        </div>
+                        <div class="user-stat-modal">
+                            <strong>${user.stats.likes}</strong>
+                            <span>Likes</span>
+                        </div>
+                        <div class="user-stat-modal">
+                            <strong>${user.stats.followers}</strong>
+                            <span>Followers</span>
+                        </div>
+                    </div>
+
+                    <div class="user-profile-actions">
+                        <button class="profile-btn" onclick="window.location.href='profile.html?user=${user.username}'">
+                            Arag Profile
+                        </button>
+                        <button class="follow-btn-modal ${user.isFollowing ? 'following' : ''}" 
+                                onclick="toggleFollow(${user.id}); closeUserModal();">
+                            ${user.isFollowing ? 'Raacay' : 'Raac'}
+                        </button>
+                        <button class="message-btn-modal" onclick="startChat('${user.username}'); closeUserModal();">
+                            Fariin
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('userModalContent').innerHTML = modalContent;
+            document.getElementById('userModal').style.display = 'block';
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('userModal');
+            if (event.target === modal) {
+                closeUserModal();
+            }
+        });
+    </script>
+</body>
+</html>
