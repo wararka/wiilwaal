@@ -784,3 +784,210 @@ process.on('SIGINT', () => {
   db.close();
   process.exit(0);
 });
+
+// server.js - Khaladka jira
+app.post('/forget-password', (req, res) => {
+  const { username, rememberName } = req.body;
+  // In real app, send email with reset link
+  res.send(`
+    <script>
+      alert('Fariin reset password ayaa la ku diray email-kaaga');
+      window.location.href = '/reset-password.html?username=${username}';
+    </script>
+  `);
+});
+
+// SAXDA AH - Add this in the HTML routes section
+app.get('/forget-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'forget-password.html'));
+});
+
+app.get('/reset-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'reset-password.html'));
+});
+
+// ==================== HTML ROUTES ====================
+
+// Home page
+app.get('/', (req, res) => {
+  if (req.session.userId) {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+  } else {
+    res.redirect('/login.html');
+  }
+});
+
+// Serve ALL HTML files explicitly
+app.get('/register.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'register.html'));
+});
+
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+app.get('/forget-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'forget-password.html'));
+});
+
+app.get('/reset-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'reset-password.html'));
+});
+
+app.get('/index.html', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+app.get('/settings.html', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'settings.html'));
+});
+
+app.get('/create-post.html', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'create-post.html'));
+});
+
+app.get('/profile.html', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'profile.html'));
+});
+
+app.get('/user-list.html', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'user-list.html'));
+});
+
+app.get('/sheeko.html', requireLogin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'sheeko.html'));
+});
+
+app.get('/admin.html', requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+});
+
+// Catch-all for other pages (remove the generic /:page route)
+app.get('/:page', (req, res) => {
+  res.status(404).send('Page not found');
+});
+
+// ==================== PASSWORD RESET APIs ====================
+
+// Forget password - SAXDA AH
+app.post('/forget-password', (req, res) => {
+  const { username, rememberName } = req.body;
+  
+  console.log('Password reset request for:', username);
+  
+  // Validate input
+  if (!username || !rememberName) {
+    return res.send(`
+      <script>
+        alert('Fadlan buuxi dhammaan fields-ka');
+        window.history.back();
+      </script>
+    `);
+  }
+
+  // Check if user exists and remember name matches
+  db.get(
+    'SELECT * FROM users WHERE username = ? AND name = ?',
+    [username.toLowerCase(), rememberName],
+    (err, user) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).send('Server error');
+      }
+      
+      if (!user) {
+        return res.send(`
+          <script>
+            alert('Username ama magaca xasuusta waa khalad');
+            window.history.back();
+          </script>
+        `);
+      }
+
+      // Success - redirect to reset password
+      res.send(`
+        <script>
+          alert('Password reset approved! Fadlan dhig password cusub');
+          window.location.href = '/reset-password.html?username=${username}';
+        </script>
+      `);
+    }
+  );
+});
+
+// Reset password - SAXDA AH
+app.post('/reset-password', (req, res) => {
+  const { username, newPassword, confirmNewPassword } = req.body;
+  
+  // Validate inputs
+  if (!username || !newPassword || !confirmNewPassword) {
+    return res.send(`
+      <script>
+        alert('Fadlan buuxi dhammaan fields-ka');
+        window.history.back();
+      </script>
+    `);
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    return res.send(`
+      <script>
+        alert('Password-ka cusub ma qabanayso!');
+        window.history.back();
+      </script>
+    `);
+  }
+
+  if (newPassword.length < 6) {
+    return res.send(`
+      <script>
+        alert('Password-ku waa inuu ka yaraadaa 6 xaraf!');
+        window.history.back();
+      </script>
+    `);
+  }
+
+  // Hash new password and update
+  bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
+    if (err) {
+      console.error('Bcrypt error:', err);
+      return res.status(500).send('Server error');
+    }
+    
+    db.run(
+      'UPDATE users SET password = ? WHERE username = ?',
+      [hashedPassword, username],
+      function(err) {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).send('Server error');
+        }
+        
+        if (this.changes === 0) {
+          return res.send(`
+            <script>
+              alert('User lama helin');
+              window.history.back();
+            </script>
+          `);
+        }
+
+        res.send(`
+          <script>
+            alert('Password-kaaga si guul leh ayaa loo beddelay! Fadlan soo gal.');
+            window.location.href = '/login.html';
+          </script>
+        `);
+      }
+    );
+  });
+});
+
+// Temporary fix - Add this at the TOP of your routes
+app.get('/forget-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'forget-password.html'));
+});
+
+app.get('/reset-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'reset-password.html'));
+});
