@@ -5,6 +5,395 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diiwaangeli - Website</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Hacker Style Register CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', monospace;
+}
+
+body {
+    background-color: #0a0a0a;
+    color: #00ff00;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Matrix Digital Rain Effect */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 79px, rgba(0, 255, 0, 0.03) 81px, rgba(0, 255, 0, 0.03) 81px),
+        linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+    background-size: 82px 82px;
+    animation: gridMove 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(82px); }
+}
+
+.container {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    position: relative;
+}
+
+.register-box {
+    background: rgba(10, 10, 10, 0.95);
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 
+        0 0 25px rgba(0, 255, 0, 0.4),
+        inset 0 0 25px rgba(0, 255, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.register-box::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #00ff00, #008800, #00cc00, #00ff00);
+    z-index: -1;
+    animation: borderGlow 4s ease-in-out infinite;
+    border-radius: 10px;
+}
+
+@keyframes borderGlow {
+    0%, 100% { 
+        opacity: 0.6;
+        filter: hue-rotate(0deg);
+    }
+    50% { 
+        opacity: 1;
+        filter: hue-rotate(90deg);
+    }
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 26px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 15px #00ff00;
+    letter-spacing: 3px;
+    animation: textPulse 3s infinite;
+    position: relative;
+}
+
+.header h1::after {
+    content: '_';
+    animation: blink 1s infinite;
+    color: #00ff00;
+}
+
+@keyframes textPulse {
+    0%, 100% { 
+        text-shadow: 0 0 15px #00ff00, 0 0 30px rgba(0, 255, 0, 0.5);
+    }
+    50% { 
+        text-shadow: 0 0 20px #00ff00, 0 0 40px rgba(0, 255, 0, 0.8);
+    }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.header p {
+    font-size: 14px;
+    color: #88ff88;
+    line-height: 1.5;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.register-form {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #88ff88;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    color: #00ff00;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    box-shadow: 0 0 12px #00ff00;
+    border-color: #88ff88;
+    background: rgba(0, 20, 0, 0.6);
+}
+
+.form-group input::placeholder {
+    color: #008800;
+    font-style: italic;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    color: #66aa66;
+    font-style: italic;
+}
+
+/* File Input Styling */
+.file-input {
+    padding: 8px !important;
+    background: rgba(0, 10, 0, 0.7) !important;
+    border: 1px dashed #00cc00 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-input:hover {
+    background: rgba(0, 20, 0, 0.8) !important;
+    border-color: #00ff00 !important;
+}
+
+.file-input::file-selector-button {
+    background: #008800;
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.file-input::file-selector-button:hover {
+    background: #00cc00;
+    box-shadow: 0 0 8px #00ff00;
+}
+
+/* Checkbox Styling */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: 25px;
+    padding: 15px;
+    background: rgba(0, 20, 0, 0.3);
+    border-radius: 4px;
+    border-left: 3px solid #00ff00;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 12px;
+    accent-color: #00ff00;
+    transform: scale(1.2);
+}
+
+.checkbox-group label {
+    margin-bottom: 0 !important;
+    cursor: pointer;
+    color: #aaffaa !important;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(45deg, #006600, #00cc00, #00ff00);
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.register-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: 0.5s;
+}
+
+.register-btn:hover {
+    background: linear-gradient(45deg, #00ff00, #00cc00, #006600);
+    box-shadow: 0 0 20px #00ff00;
+    transform: translateY(-3px);
+}
+
+.register-btn:hover::before {
+    left: 100%;
+}
+
+.register-btn:active {
+    transform: translateY(0);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #008800;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #00ff00;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.login-link a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #00ff00;
+    transition: width 0.3s ease;
+}
+
+.login-link a:hover {
+    color: #88ff88;
+    text-shadow: 0 0 8px #00ff00;
+}
+
+.login-link a:hover::after {
+    width: 100%;
+}
+
+/* Terminal cursor effect for focused inputs */
+.form-group input:focus {
+    position: relative;
+}
+
+.form-group input:focus::after {
+    content: '|';
+    position: absolute;
+    right: 10px;
+    animation: blink 1s infinite;
+    color: #00ff00;
+}
+
+/* Password strength indicator */
+.password-strength {
+    height: 4px;
+    background: #004400;
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.password-strength::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: #00ff00;
+    transition: width 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .register-box {
+        padding: 20px 15px;
+    }
+    
+    .header h1 {
+        font-size: 22px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .checkbox-group {
+        padding: 12px;
+    }
+}
+
+/* Scan line effect */
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(0, 255, 0, 0.03) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: -1;
+    animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+    </style>
 </head>
 <body>
     <div class="container">
